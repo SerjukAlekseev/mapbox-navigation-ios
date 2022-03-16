@@ -6,7 +6,7 @@ import MapboxDirections
 /**
  `InstructionsBannerViewDelegate` provides methods for reacting to user interactions in `InstructionsBannerView`.
  */
-public protocol InstructionsBannerViewDelegate: VisualInstructionDelegate {
+public protocol InstructionsBannerViewDelegate: AnyObject, UnimplementedLogging {
     /**
      Called when the user taps the `InstructionsBannerView`.
      */
@@ -68,8 +68,13 @@ open class BaseInstructionsBannerView: UIControl {
             if showStepIndicator {
                 stepListIndicatorView.isHidden = false
             }
-            primaryLabel.instructionDelegate = delegate
-            secondaryLabel.instructionDelegate = delegate
+        }
+    }
+    
+    weak var instructionDelegate: VisualInstructionDelegate? {
+        didSet {
+            primaryLabel.instructionDelegate = instructionDelegate
+            secondaryLabel.instructionDelegate = instructionDelegate
         }
     }
     
@@ -202,35 +207,39 @@ open class BaseInstructionsBannerView: UIControl {
         let distanceLabel = DistanceLabel()
         distanceLabel.translatesAutoresizingMaskIntoConstraints = false
         distanceLabel.adjustsFontSizeToFitWidth = true
-        distanceLabel.minimumScaleFactor = 16.0 / 22.0
+        //distanceLabel.minimumScaleFactor = 16.0 / 22.0
+        //distanceLabel.font = UIFont.systemFont(ofSize: 16.0)
         addSubview(distanceLabel)
         self.distanceLabel = distanceLabel
         
         let primaryLabel = PrimaryLabel()
-        primaryLabel.instructionDelegate = delegate
+        primaryLabel.instructionDelegate = instructionDelegate
         primaryLabel.translatesAutoresizingMaskIntoConstraints = false
         primaryLabel.allowsDefaultTighteningForTruncation = true
-        primaryLabel.adjustsFontSizeToFitWidth = true
-        primaryLabel.numberOfLines = 1
-        primaryLabel.minimumScaleFactor = 20.0 / 30.0
+        //primaryLabel.adjustsFontSizeToFitWidth = true
+        primaryLabel.numberOfLines = 2
+    //    primaryLabel.font = UIFont.systemFont(ofSize: 16.0)
+      //  primaryLabel.minimumScaleFactor = 20.0 / 30.0
         primaryLabel.lineBreakMode = .byTruncatingTail
         addSubview(primaryLabel)
         self.primaryLabel = primaryLabel
         
         let secondaryLabel = SecondaryLabel()
-        secondaryLabel.instructionDelegate = delegate
+        secondaryLabel.instructionDelegate = instructionDelegate
         secondaryLabel.translatesAutoresizingMaskIntoConstraints = false
         secondaryLabel.allowsDefaultTighteningForTruncation = true
         secondaryLabel.numberOfLines = 1
-        secondaryLabel.minimumScaleFactor = 20.0 / 26.0
+       // secondaryLabel.minimumScaleFactor = 20.0 / 26.0
         secondaryLabel.lineBreakMode = .byTruncatingTail
         addSubview(secondaryLabel)
         self.secondaryLabel = secondaryLabel
         
         let dividerView = UIView()
+        dividerView.isHidden = true
         dividerView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(dividerView)
         self.dividerView = dividerView
+      
         
         let _separatorView = UIView()
         _separatorView.translatesAutoresizingMaskIntoConstraints = false
@@ -266,13 +275,6 @@ open class BaseInstructionsBannerView: UIControl {
         // firstColumnWidth is the width of the left side of the banner containing the maneuver view and distance label
         let firstColumnWidth = BaseInstructionsBannerView.maneuverViewSize.width + BaseInstructionsBannerView.padding * 3
         
-        // Distance label
-        distanceLabel.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: BaseInstructionsBannerView.padding / 2).isActive = true
-        distanceLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -BaseInstructionsBannerView.padding / 2).isActive = true
-        distanceLabel.centerXAnchor.constraint(equalTo: maneuverView.centerXAnchor, constant: 0).isActive = true
-        distanceLabel.lastBaselineAnchor.constraint(equalTo: bottomAnchor, constant: -BaseInstructionsBannerView.padding).isActive = true
-        distanceLabel.topAnchor.constraint(greaterThanOrEqualTo: maneuverView.bottomAnchor).isActive = true
-        
         // Turn arrow view
         maneuverView.heightAnchor.constraint(equalToConstant: BaseInstructionsBannerView.maneuverViewSize.height).isActive = true
         maneuverView.widthAnchor.constraint(equalToConstant: BaseInstructionsBannerView.maneuverViewSize.width).isActive = true
@@ -280,10 +282,17 @@ open class BaseInstructionsBannerView: UIControl {
         maneuverView.centerXAnchor.constraint(equalTo: leadingAnchor, constant: firstColumnWidth / 2).isActive = true
         
         // Primary Label
-        primaryLabel.leadingAnchor.constraint(equalTo: dividerView.trailingAnchor).isActive = true
-        primaryLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -18).isActive = true
-        baselineConstraints.append(primaryLabel.topAnchor.constraint(equalTo: maneuverView.topAnchor, constant: -BaseInstructionsBannerView.padding/2))
-        centerYConstraints.append(primaryLabel.centerYAnchor.constraint(equalTo: centerYAnchor))
+        distanceLabel.leadingAnchor.constraint(equalTo: dividerView.trailingAnchor).isActive = true
+        distanceLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -18).isActive = true
+        baselineConstraints.append(distanceLabel.topAnchor.constraint(equalTo: maneuverView.topAnchor, constant: -BaseInstructionsBannerView.padding/2))
+        centerYConstraints.append(distanceLabel.centerYAnchor.constraint(equalTo: maneuverView.centerYAnchor))
+        
+        // Distance label
+        primaryLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20).isActive = true
+        primaryLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20).isActive = true
+        primaryLabel.centerXAnchor.constraint(equalTo: maneuverView.centerXAnchor, constant: 0).isActive = true
+        primaryLabel.lastBaselineAnchor.constraint(equalTo: bottomAnchor, constant: -BaseInstructionsBannerView.padding).isActive = true
+        primaryLabel.topAnchor.constraint(greaterThanOrEqualTo: maneuverView.bottomAnchor).isActive = true
         
         // Secondary Label
         secondaryLabel.leadingAnchor.constraint(equalTo: dividerView.trailingAnchor).isActive = true
