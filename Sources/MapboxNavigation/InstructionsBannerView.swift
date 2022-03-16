@@ -274,7 +274,7 @@ open class BaseInstructionsBannerView: UIControl {
     func setupLayout() {
         // firstColumnWidth is the width of the left side of the banner containing the maneuver view and distance label
         let firstColumnWidth = BaseInstructionsBannerView.maneuverViewSize.width + BaseInstructionsBannerView.padding * 3
-        
+    
         // Turn arrow view
         maneuverView.heightAnchor.constraint(equalToConstant: BaseInstructionsBannerView.maneuverViewSize.height).isActive = true
         maneuverView.widthAnchor.constraint(equalToConstant: BaseInstructionsBannerView.maneuverViewSize.width).isActive = true
