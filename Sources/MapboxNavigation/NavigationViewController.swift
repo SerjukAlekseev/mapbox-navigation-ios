@@ -506,6 +506,24 @@ open class NavigationViewController: UIViewController, NavigationStatusPresenter
         }
     }
     
+    public var showsOverviewButton: Bool {
+        get {
+            ornamentsController?.showsOverviewButton ?? false
+        }
+        set {
+            ornamentsController?.showsOverviewButton = newValue
+        }
+    }
+    
+    public var showsMuteButton: Bool {
+        get {
+            ornamentsController?.showsMuteButton ?? false
+        }
+        set {
+            ornamentsController?.showsMuteButton = newValue
+        }
+    }
+    
     /**
      Controls whether or not the FeedbackViewController shows a second level of detail for feedback items.
      
